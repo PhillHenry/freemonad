@@ -78,11 +78,9 @@ enum Free[F[_], A]:
   final def map[B](f: A => B): Free[F, B] = FlatMap[F, A, B](this, a => Free.pure(f(a)))
 
   final def foldMap[G[_] : Monad](using nt: F ~> G): G[A] = this match {
-    case Pure(value) => Monad[G].pure(value)
-    case Suspend(fa) => nt(fa)
-    case FlatMap(inner, f) =>
-      val ge = inner.foldMap(Monad[G], nt)
-      Monad[G].flatMap(ge, in => f(in).foldMap(Monad[G], nt))
+    case Pure(value)        => Monad[G].pure(value)
+    case Suspend(fa)        => nt(fa)
+    case FlatMap(inner, f)  => Monad[G].flatMap(inner.foldMap, in => f(in).foldMap)
   }
 
 object Free:
