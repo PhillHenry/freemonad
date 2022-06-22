@@ -21,11 +21,7 @@ object Interop:
           val io = Console.printLine(s"USER [$hint]") *> Console.readLine
           io.provide(hasConsole).orDie
         case RunSearch(query, limit) => Task {
-          // fake service
-          val results = (0 until limit).map { i =>
-            s"curl -H fake:$i -XPOST $url -d $query"
-          }
-          SearchResult(results.toList)
+          SearchResult(List(s"curl -H fake: -XPOST $url -d $query"))
         }
       }
     }
